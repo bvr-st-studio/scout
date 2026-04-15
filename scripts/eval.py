@@ -1,3 +1,4 @@
+import argparse
 import os
 
 import torch
@@ -6,12 +7,14 @@ from huggingface_hub import login
 from peft import PeftModel
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
-load_dotenv()
+parser = argparse.ArgumentParser()
+parser.add_argument("--config", required=True, help="Path to config env file")
+args = parser.parse_args()
+load_dotenv(args.config)
 
 login(token=os.getenv("HF_TOKEN"))
-
 MODEL = os.getenv("MODEL", "nvidia/Minitron-4B-Base")
-OUTPUT_DIR = os.getenv("OUTPUT_DIR", "output/scout-v0") + "/final"
+OUTPUT_DIR = os.getenv("OUTPUT_DIR", "output/scout-1-football-instruct-4b") + "/final"
 
 PROMPTS = [
     "What adjustments would you make at halftime against a team running heavy zone defense?",
@@ -40,13 +43,13 @@ tokenizer = AutoTokenizer.from_pretrained(MODEL)
 
 print("=== BASE MODEL ===")
 base = AutoModelForCausalLM.from_pretrained(
-    MODEL, torch_dtype=torch.bfloat16, device_map="auto"
+    MODEL, torch_dtype=torch.float32, device_map="auto"
 )
 for p in PROMPTS:
     print(f"\nQ: {p}")
     print(f"A: {generate(base, tokenizer, p)}")
 
-print("\n=== SCOUT-V0 ===")
+print("\n=== SCOUT-1-FOOTBALL-INSTRUCT-4B ===")
 scout = PeftModel.from_pretrained(base, OUTPUT_DIR)
 for p in PROMPTS:
     print(f"\nQ: {p}")

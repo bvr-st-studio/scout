@@ -48,3 +48,7 @@ License terms to be published at release.
 ---
 
 *Built by BVR ST STUDIO*
+
+python scripts/train.py --config configs/football-instruct-4b.env
+
+python scripts/eval.py --config configs/football-instruct-4b.env

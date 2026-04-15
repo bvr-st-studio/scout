@@ -1,3 +1,4 @@
+import argparse
 import os
 
 import torch
@@ -9,13 +10,15 @@ from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 from trl.trainer.sft_config import SFTConfig
 from trl.trainer.sft_trainer import SFTTrainer
 
-load_dotenv()
+parser = argparse.ArgumentParser()
+parser.add_argument("--config", required=True, help="Path to config env file")
+args = parser.parse_args()
+load_dotenv(args.config)
 
 login(token=os.getenv("HF_TOKEN"))
-
 MODEL = os.getenv("MODEL", "nvidia/Minitron-4B-Base")
-DATA_FILE = os.getenv("DATA_FILE", "data/processed/scout_v0.jsonl")
-OUTPUT_DIR = os.getenv("OUTPUT_DIR", "output/scout-v0")
+DATA_FILE = os.getenv("DATA_FILE", "data/football/instruct/scout-1-football.jsonl")
+OUTPUT_DIR = os.getenv("OUTPUT_DIR", "output/scout-1-football-instruct-4b")
 
 bnb_config = BitsAndBytesConfig(
     load_in_4bit=True,
@@ -23,11 +26,12 @@ bnb_config = BitsAndBytesConfig(
     bnb_4bit_use_double_quant=True,
     bnb_4bit_quant_type="nf4",
 )
-
 model = AutoModelForCausalLM.from_pretrained(
-    MODEL, quantization_config=bnb_config, device_map="auto", torch_dtype=torch.float32,
+    MODEL,
+    quantization_config=bnb_config,
+    device_map="auto",
+    torch_dtype=torch.float32,
 )
-
 tokenizer = AutoTokenizer.from_pretrained(MODEL)
 tokenizer.pad_token = tokenizer.eos_token
 
@@ -53,7 +57,7 @@ trainer = SFTTrainer(
         gradient_accumulation_steps=4,
         learning_rate=2e-4,
         fp16=False,
-	bf16=False,
+        bf16=False,
         logging_steps=10,
         save_strategy="epoch",
         report_to="none",
