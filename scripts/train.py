@@ -10,9 +10,9 @@ from trl.trainer.sft_trainer import SFTTrainer
 
 load_dotenv()
 
-MODEL = os.getenv("SCOUT_MODEL", "nvidia/Minitron-4B-Base")
-DATA_FILE = os.getenv("SCOUT_DATA_FILE", "data/processed/scout_v0.jsonl")
-OUTPUT_DIR = os.getenv("SCOUT_OUTPUT_DIR", "output/scout-v0")
+MODEL = os.getenv("MODEL", "nvidia/Minitron-4B-Base")
+DATA_FILE = os.getenv("DATA_FILE", "data/processed/scout_v0.jsonl")
+OUTPUT_DIR = os.getenv("OUTPUT_DIR", "output/scout-v0")
 
 bnb_config = BitsAndBytesConfig(
     load_in_4bit=True,
