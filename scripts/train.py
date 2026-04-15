@@ -3,12 +3,15 @@ import os
 import torch
 from datasets import load_dataset
 from dotenv import load_dotenv
+from huggingface_hub import login
 from peft import LoraConfig
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 from trl.trainer.sft_config import SFTConfig
 from trl.trainer.sft_trainer import SFTTrainer
 
 load_dotenv()
+
+login(token=os.getenv("HF_TOKEN"))
 
 MODEL = os.getenv("MODEL", "nvidia/Minitron-4B-Base")
 DATA_FILE = os.getenv("DATA_FILE", "data/processed/scout_v0.jsonl")

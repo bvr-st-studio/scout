@@ -2,10 +2,13 @@ import os
 
 import torch
 from dotenv import load_dotenv
+from huggingface_hub import login
 from peft import PeftModel
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
 load_dotenv()
+
+login(token=os.getenv("HF_TOKEN"))
 
 MODEL = os.getenv("MODEL", "nvidia/Minitron-4B-Base")
 OUTPUT_DIR = os.getenv("OUTPUT_DIR", "output/scout-v0") + "/final"
