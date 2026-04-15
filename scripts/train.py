@@ -19,13 +19,13 @@ OUTPUT_DIR = os.getenv("OUTPUT_DIR", "output/scout-v0")
 
 bnb_config = BitsAndBytesConfig(
     load_in_4bit=True,
-    bnb_4bit_compute_dtype=torch.bfloat16,
+    bnb_4bit_compute_dtype=torch.float32,
     bnb_4bit_use_double_quant=True,
     bnb_4bit_quant_type="nf4",
 )
 
 model = AutoModelForCausalLM.from_pretrained(
-    MODEL, quantization_config=bnb_config, device_map="auto"
+    MODEL, quantization_config=bnb_config, device_map="auto", torch_dtype=torch.float32,
 )
 
 tokenizer = AutoTokenizer.from_pretrained(MODEL)
@@ -52,7 +52,8 @@ trainer = SFTTrainer(
         per_device_train_batch_size=4,
         gradient_accumulation_steps=4,
         learning_rate=2e-4,
-        bf16=True,
+        fp16=False,
+	bf16=False,
         logging_steps=10,
         save_strategy="epoch",
         report_to="none",
