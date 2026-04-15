@@ -26,7 +26,13 @@ def generate(model, tokenizer, prompt):
         f"### Instruction: {prompt}\n### Response:", return_tensors="pt"
     ).to(model.device)
     with torch.no_grad():
-        out = model.generate(**inputs, max_new_tokens=200, do_sample=False)
+        out = model.generate(
+            **inputs,
+            max_new_tokens=200,
+            do_sample=False,
+            eos_token_id=tokenizer.eos_token_id,
+            repetition_penalty=1.3,
+        )
     return tokenizer.decode(out[0], skip_special_tokens=True)
 
 
