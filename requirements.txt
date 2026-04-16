@@ -5,3 +5,5 @@ trl
 accelerate
 python-dotenv
 huggingface_hub
+beautifulsoup4
+requests
