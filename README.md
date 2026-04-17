@@ -1,37 +1,14 @@
 # Scout
 
-**Scout** is the first open-source foundation model built exclusively for sports. Designed from the ground up to handle text, strategy, and media across all variants for all sports.
+**Scout** is an open-source sports model built to understand the language, strategy, and intelligence of athletics in various sports. Designed for coaches, analysts, developers, and researchers who need a model that actually speaks the language of the game.
 
 ---
 
 ## Overview
 
-General-purpose AI models weren't built for sports. Coaches and analysts are left with tools that give surface-level advice, confuse terminology, and can't analyze plays or strategy. Scout changes that.
+General-purpose AI models were not built for sports. Coaches and analysts are left with tools that give surface-level answers, confuse terminology, and have no real understanding of scheme, strategy, or situational football. Scout intends to change that.
 
-Built on the language of athletics, Scout will be released as an open-source model (similar to Qwen or Llama) giving developers, researchers, and academics the freedom to use, build on, and improve it however they see fit.
-
----
-
-## Model Variants
-
-Scout is offered in four core variants:
-
-| Variant | Description |
-|---|---|
-| `scout-base` | Base model trained on sports data |
-| `scout-instruct` | Executes instructions directly |
-| `scout-reason` | Thinks step-by-step through strategy and decisions |
-| `scout-observe` | Analyzes incoming data, diagrams, formations, film, and more |
-
-Each variant also has **sport-specific fine-tunes** trained deeper on the terminology, strategy, and data unique to a given sport:
-
-```
-scout-football-instruct
-scout-baseball-reason
-scout-basketball-observe
-```
-
-This lets coaches and analysts use a model built precisely for their game — not a general base model trying to cover everything.
+Built on NVIDIA's Nemotron VL architecture, Scout is continuously trained on real sports knowledge like coverages, schemes, gameplans, personnel, situational decisions, historical data and coaching intelligence that does not exist in general-purpose training data. Scout will be released as an open-source model, giving developers, researchers, and sports organizations the freedom to use, build on, and improve it however they see fit.
 
 ---
 
@@ -43,12 +20,8 @@ Scout is open-source. Contributions from developers, researchers, and sports tec
 
 ## License
 
-License terms to be published at release.
+Built on the [NVIDIA Open Model License Agreement](nvidia.com/en-us/agreements/enterprise-software/nvidia-open-model-license). Full license terms to be published at release of v1.
 
 ---
 
-*Built by BVR ST STUDIO*
-
-python scripts/train.py --config configs/football-instruct-4b.env
-
-python scripts/eval.py --config configs/football-instruct-4b.env
+*Built by BVR ST STUDIO — powered by NVIDIA Inception Program*
