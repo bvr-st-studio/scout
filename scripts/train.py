@@ -6,7 +6,7 @@ from datasets import load_dataset
 from dotenv import load_dotenv
 from huggingface_hub import login
 from peft import LoraConfig
-from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
+from transformers import AutoModelForCausalLM, AutoTokenizer
 from trl.trainer.sft_config import SFTConfig
 from trl.trainer.sft_trainer import SFTTrainer
 
@@ -16,22 +16,18 @@ args = parser.parse_args()
 load_dotenv(args.config)
 
 login(token=os.getenv("HF_TOKEN"))
-MODEL = os.getenv("MODEL", "nvidia/Minitron-4B-Base")
-DATA_FILE = os.getenv("DATA_FILE", "data/football/instruct/scout-1-football.jsonl")
-OUTPUT_DIR = os.getenv("OUTPUT_DIR", "output/scout-1-football-instruct-4b")
 
-bnb_config = BitsAndBytesConfig(
-    load_in_4bit=True,
-    bnb_4bit_compute_dtype=torch.float32,
-    bnb_4bit_use_double_quant=True,
-    bnb_4bit_quant_type="nf4",
-)
+MODEL = os.getenv("MODEL", "nvidia/NVIDIA-Nemotron-Nano-12B-v2-VL-BF16")
+DATA_FILE = os.getenv("DATA_FILE", "data/football/instruct/scout-1-football.jsonl")
+OUTPUT_DIR = os.getenv("OUTPUT_DIR", "output/scout-1-football-12b")
+
 model = AutoModelForCausalLM.from_pretrained(
     MODEL,
-    quantization_config=bnb_config,
+    trust_remote_code=True,
     device_map="auto",
-    torch_dtype=torch.float32,
+    torch_dtype=torch.bfloat16,  # type: ignore
 )
+
 tokenizer = AutoTokenizer.from_pretrained(MODEL)
 tokenizer.pad_token = tokenizer.eos_token
 
@@ -40,7 +36,7 @@ dataset = load_dataset("json", data_files=DATA_FILE, split="train")
 lora_config = LoraConfig(
     r=16,
     lora_alpha=32,
-    target_modules=["q_proj", "v_proj"],
+    target_modules=["q_proj", "v_proj", "k_proj", "o_proj"],
     lora_dropout=0.05,
     bias="none",
     task_type="CAUSAL_LM",
@@ -52,16 +48,17 @@ trainer = SFTTrainer(
     peft_config=lora_config,
     args=SFTConfig(
         output_dir=OUTPUT_DIR,
-        num_train_epochs=3,
-        per_device_train_batch_size=4,
-        gradient_accumulation_steps=4,
-        learning_rate=2e-4,
+        num_train_epochs=5,
+        per_device_train_batch_size=2,
+        gradient_accumulation_steps=8,
+        learning_rate=1e-4,
+        bf16=True,
         fp16=False,
-        bf16=False,
         logging_steps=10,
         save_strategy="epoch",
         report_to="none",
         dataset_text_field="text",
+        gradient_checkpointing=True,
     ),
 )
 
