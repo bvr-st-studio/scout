@@ -10,6 +10,7 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 from trl.trainer.sft_config import SFTConfig
 from trl.trainer.sft_trainer import SFTTrainer
 
+## Choose path for config to grab env information for loading tokens, model, datasets and outputs
 parser = argparse.ArgumentParser()
 parser.add_argument("--config", required=True, help="Path to config env file")
 args = parser.parse_args()
@@ -34,6 +35,7 @@ tokenizer.pad_token = tokenizer.eos_token
 dataset = load_dataset("json", data_files=DATA_FILE, split="train")
 
 
+# format the dataset based on tags
 def format_example(example):
     messages = [
         {"role": "system", "content": "/no_think"},
@@ -49,6 +51,7 @@ def format_example(example):
 
 dataset = dataset.map(format_example)
 
+# create lora config
 lora_config = LoraConfig(
     r=16,
     lora_alpha=32,
@@ -58,6 +61,7 @@ lora_config = LoraConfig(
     task_type="CAUSAL_LM",
 )
 
+# create trainer with lora_config
 trainer = SFTTrainer(
     model=model,
     train_dataset=dataset,
@@ -78,6 +82,7 @@ trainer = SFTTrainer(
     ),
 )
 
+# train and save model
 trainer.train()
 trainer.save_model(f"{OUTPUT_DIR}/final")
 print("Done. Scout saved.")
