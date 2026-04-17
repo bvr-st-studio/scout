@@ -33,6 +33,22 @@ tokenizer.pad_token = tokenizer.eos_token
 
 dataset = load_dataset("json", data_files=DATA_FILE, split="train")
 
+
+def format_example(example):
+    messages = [
+        {"role": "system", "content": "/no_think"},
+        {"role": "user", "content": example["instruction"]},
+        {"role": "assistant", "content": example["output"]},
+    ]
+    return {
+        "text": tokenizer.apply_chat_template(
+            messages, tokenize=False, add_generation_prompt=False
+        )
+    }
+
+
+dataset = dataset.map(format_example)
+
 lora_config = LoraConfig(
     r=16,
     lora_alpha=32,
